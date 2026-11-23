@@ -1,6 +1,14 @@
-require('dotenv').config();
+require("dotenv").config();
+
+const secret = process.env.JWT_SECRET;
+
+if (!secret || secret.length < 32) {
+    throw new Error(
+        "JWT_SECRET deve estar configurada e possuir pelo menos 32 caracteres.",
+    );
+}
 
 module.exports = {
-    secret: process.env.JWT_SECRET || 'default_jwt_secret_change_in_production',
-    expiresIn: process.env.JWT_EXPIRES_IN || '1d',
-};
+    secret,
+    expiresIn: process.env.JWT_EXPIRES_IN || "1d",
+}
