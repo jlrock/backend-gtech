@@ -52,18 +52,21 @@ project-root/
 
 ### 2. Clonar e instalar dependências
 
+Crie uma pasta na sua máquina e abra com o terminal do **Git Bash**, depois digite os seguintes comandos: 
+
 ```bash
-git clone <url-do-seu-repositorio>
+git init
+git clone <url-deste-repositorio>
 cd <nome-da-pasta>
 npm install
 ```
 
 ### 3. Configurar variáveis de ambiente
 
-Copie o arquivo `.env.example` para `.env` e ajuste as credenciais do seu MySQL:
+Renomeie o arquivo `.env.example` para `.env` e ajuste as credenciais do seu MySQL:
 
 ```bash
-cp .env.example .env
+mv .env.example .env
 ```
 
 Exemplo do `.env`:
@@ -78,7 +81,7 @@ DB_NAME=digital_store
 DB_USER=root
 DB_PASS=root
 
-JWT_SECRET=sua_chave_secreta_super_segura
+JWT_SECRET=sua_chave_secreta
 JWT_EXPIRES_IN=1d
 ```
 
