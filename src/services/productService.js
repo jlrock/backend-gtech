@@ -48,9 +48,9 @@ function parsePositiveId(id) {
     return parsed > 0 ? parsed : null;
 }
 
-/**
- * Converte valores como "4px" ou 4 para inteiro não negativo.
- */
+
+// Converte valores como "4px" ou 4 para inteiro não negativo.
+
 function parseRadius(radius) {
     if (radius === undefined || radius === null) {
         return 0;
@@ -71,9 +71,9 @@ function parseRadius(radius) {
     throw new AppError('Formato inválido para o campo radius.', 400);
 }
 
-/**
- * Normaliza `values` ou `value` de uma opção para string separada por vírgulas.
- */
+
+// Normaliza `values` ou `value` de uma opção para string separada por vírgulas.
+
 function normalizeOptionValues(option) {
     const raw = option.values !== undefined ? option.values : option.value;
 
@@ -99,9 +99,9 @@ function normalizeOptionValues(option) {
     throw new AppError('Os valores da opção (values/value) são obrigatórios.', 400);
 }
 
-/**
- * Formata uma instância de Product com suas associações para o contrato JSON da API.
- */
+
+// Formata uma instância de Product com suas associações para o contrato JSON da API.
+
 function formatProduct(productInstance, baseUrl, selectedFields = DEFAULT_PRODUCT_FIELDS) {
     const plain = productInstance.get ? productInstance.get({ plain: true }) : productInstance;
     const formatted = {};
@@ -154,9 +154,9 @@ function formatProduct(productInstance, baseUrl, selectedFields = DEFAULT_PRODUC
     return formatted;
 }
 
-/**
- * Faz a interseção entre um conjunto acumulado de IDs e um novo array de IDs.
- */
+
+// Faz a interseção entre um conjunto acumulado de IDs e um novo array de IDs.
+
 function intersectIds(currentSet, newIds) {
     if (currentSet === null) {
         return new Set(newIds);
@@ -166,9 +166,9 @@ function intersectIds(currentSet, newIds) {
 }
 
 class ProductService {
-    /**
-     * Pesquisa produtos com paginação, seleção de campos e filtros avançados.
-     */
+    
+    // Pesquisa produtos com paginação, seleção de campos e filtros avançados.
+    
     async searchProducts(query, baseUrl) {
         // 1. Paginação (limit e page)
         let limit = 12;
@@ -346,7 +346,7 @@ class ProductService {
 
         if (limit !== -1) {
             idQueryOptions.limit = limit;
-            idQueryOptions.offset = (page - 1) * limit;
+            idQueryOptions.offset = (page - 1)// limit;
         }
 
         const { count, rows: idRows } = await Product.findAndCountAll(idQueryOptions);
@@ -392,9 +392,9 @@ class ProductService {
         };
     }
 
-    /**
-     * Busca um produto completo pelo ID.
-     */
+    
+    // Busca um produto completo pelo ID.
+    
     async getProductById(id, baseUrl) {
         const productId = parsePositiveId(id);
         if (!productId) {
@@ -420,9 +420,9 @@ class ProductService {
         return formatProduct(product, baseUrl);
     }
 
-    /**
-     * Cria um produto juntamente com suas categorias, imagens e opções dentro de uma transação.
-     */
+    
+    // Cria um produto juntamente com suas categorias, imagens e opções dentro de uma transação.
+    
     async createProduct(payload, baseUrl) {
         const {
             enabled,
@@ -589,18 +589,19 @@ class ProductService {
 
             await transaction.commit();
 
-            return this.getProductById(product.id, baseUrl);
         } catch (error) {
             await transaction.rollback();
             // Remove eventuais imagens salvas em disco caso a transação falhe
             await Promise.all(savedLocalFiles.map((filePath) => deleteLocalImage(filePath)));
             throw error;
         }
+
+        return this.getProductById(product.id, baseUrl);
     }
 
-    /**
-     * Atualiza um produto e gerencia criação, edição e exclusão de imagens, opções e categorias.
-     */
+    
+    // Atualiza um produto e gerencia criação, edição e exclusão de imagens, opções e categorias.
+    
     async updateProduct(id, payload) {
         const productId = parsePositiveId(id);
         if (!productId) {
@@ -900,18 +901,24 @@ class ProductService {
 
             await transaction.commit();
 
-            // Remove apenas após confirmação da transação no banco
-            await Promise.all(filesToDeleteAfterCommit.map((filePath) => deleteLocalImage(filePath)));
         } catch (error) {
             await transaction.rollback();
             await Promise.all(newLocalFiles.map((filePath) => deleteLocalImage(filePath)));
             throw error;
         }
+
+        const cleanupResults = await Promise.allSettled(filesToDeleteAfterCommit.map(deleteLocalImage));
+
+        for (const result of cleanupResults) {
+            if (result.status === 'rejected') {
+                console.error('Falha ao remover imagem antiga:', result.reason);
+            }
+        }
     }
 
-    /**
-     * Remove um produto e limpa suas imagens locais associadas.
-     */
+    
+    // Remove um produto e limpa suas imagens locais associadas.
+    
     async deleteProduct(id) {
         const productId = parsePositiveId(id);
         if (!productId) {
@@ -944,4 +951,4 @@ class ProductService {
     }
 }
 
-module.exports = new ProductService();
+module.exports = new ProductService()
