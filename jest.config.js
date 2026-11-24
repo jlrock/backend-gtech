@@ -2,11 +2,19 @@ module.exports = {
     testEnvironment: 'node',
     verbose: true,
     clearMocks: true,
+
+    setupFiles: [
+        '<rootDir>/tests/setup.js'
+    ],
+
     collectCoverageFrom: [
         'src/**/*.js',
         '!src/server.js',
         '!src/database/migrations/**',
-        '!src/config/swagger.js',
+        '!src/config/swagger.js'
     ],
-    testMatch: ['**/tests/**/*.test.js'],
+
+    testMatch: [
+        '**/tests/**/*.test.js'
+    ],
 };
